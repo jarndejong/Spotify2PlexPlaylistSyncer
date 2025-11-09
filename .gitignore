@@ -1,3 +1,7 @@
+# NO API tokens, credentials, etc.
+credentials/plex.yaml
+credentials/spotify.yaml
+
 # ---> Python
 # Byte-compiled / optimized / DLL files
 __pycache__/
