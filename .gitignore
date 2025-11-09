@@ -2,6 +2,9 @@
 credentials/plex.yaml
 credentials/spotify.yaml
 
+# Don't upload actual settings
+settings.yaml
+
 # ---> Python
 # Byte-compiled / optimized / DLL files
 __pycache__/

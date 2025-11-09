@@ -1,0 +1,5 @@
+# Spotify ID of playlist to sync
+playlist_id: "2y385pGnXJIqN5miW8n1TN"
+
+# Name of plex music library to create playlist in.
+plex_library_name: "Music"
