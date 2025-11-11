@@ -29,21 +29,3 @@ def get_plex_playlist_name(settings: dict = settings) -> str:
     
     assert playlist_name is not None
     return playlist_name
-
-# def get_plex_playlist(library: MusicSection, settings: dict = settings) -> Playlist | None:
-#     '''
-#     Retrieve the plex playlist.
-#     If no playlist can be found with the given settings
-#     '''
-#     try:
-#         return library.playlist(title = get_plex_playlist_name(settings))
-#     except NotFound:
-#         create_plex_playlist(library, settings)
-
-# def create_plex_playlist(library: MusicSection, settings: dict = settings) -> Playlist:
-#     '''
-#     Create a new plex playlist with the provided settings.
-#     '''
-#     return library.createPlaylist(title = get_plex_playlist_name(settings),
-#                            items = library.recentlyAddedTracks(maxresults=1)[0],)
-

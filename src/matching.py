@@ -148,7 +148,7 @@ def _search_track_by_artist(plexlibrary: MusicSection, spotify_track: dict, fuzz
                 matched_artist = found_artist
                 continue
         else:
-            if spotify_artist_name == _clean_title(found_artist.artist().title):
+            if spotify_artist_name == _clean_title(found_artist.title):
                 matched_artist = found_artist
                 continue
     

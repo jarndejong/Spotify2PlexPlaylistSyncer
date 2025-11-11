@@ -22,7 +22,7 @@ def get_playlist_name(playlist_id: str) -> str | None:
     except SpotifyException:
         raise ValueError(f"Could not retrieve spotify playlist with id {playlist_id}, please check the settings.")
 
-def tracks_from_spotify_playlist(playlist_id: str) -> list:
+def tracks_from_spotify_playlist(playlist_id: str) -> list[dict[str, str|list[str]]]:
     '''
     Get a list of all tracks in a Spotify playlist by id.
     '''
