@@ -11,7 +11,7 @@ A straightforward tool to sync a Spotify playlist to a Plex playlist.
 ## Installation
 Clone this repository & change into:
 ```
-cd ~
+cd https://github.com/jarndejong/Spotify2PlexPlaylistSyncer.git
 git clone url
 cd Spotify2PlexPlaylistSyncer
 ```
@@ -114,3 +114,6 @@ Relative filename of the unmatched tracks file. Can be either a `.txt` or `.csv`
 Either `true` or `false`. If `true`, thenmatched spotify tracks and plex tracks will be printed to file. For error checking etc.
 ##### `matched_tracks_filename:`
 Relative filename of the matched tracks file. Can be either a `.txt` or `.csv` file.
+
+# Online repository
+The publicly available repository on GitHub (i.e. available [here](https://github.com/jarndejong/Spotify2PlexPlaylistSyncer); most likely you are currently viewing this one) is an automated mirror from a private, self-hosted git repository.
