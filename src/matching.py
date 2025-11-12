@@ -1,11 +1,57 @@
-from rapidfuzz import fuzz, process
+"""
+This module handles Spotify -> Plex track matching.
+"""
 from typing import cast, Sequence
 import re
 import unicodedata
+
+from rapidfuzz import fuzz
+
 from plexapi.library import MusicSection
 from plexapi.audio import Track, Album
 
-def search_track(plexlibrary: MusicSection, spotify_track: dict[str,str|dict|list], matching_strength: str | list[str]) -> Track | None:
+def link_track(plexlibrary: MusicSection,
+                spotify_track: dict[str,str],
+                mapping_dict: dict[str,str] | None,
+                matching_strength: str | list[str],
+                ) -> Track | None:
+    '''
+    Try to link a spotify track to a plex track. Returns None if no track is found.
+    First tries to retrieve the track from the mapping.
+    If that doesn't results in a track, a search is performed.
+    '''
+    plex_track = None
+    if mapping_dict:
+        plex_track = retrieve_track_from_mapping(
+                            plexlibrary = plexlibrary,
+                            spotify_track_id = spotify_track['id'],
+                            mapping_dict = mapping_dict,
+        )
+    if not plex_track:
+        plex_track = search_track(
+            plexlibrary=plexlibrary,
+            spotify_track = spotify_track, # type: ignore
+            matching_strength=matching_strength,
+        )
+    return plex_track 
+
+def retrieve_track_from_mapping(plexlibrary: MusicSection,
+                                spotify_track_id: str,
+                                mapping_dict: dict[str,str]
+                                ) -> Track | None:
+    '''
+    Try to retrieve the track from the plex music library using the mapping dictionary.
+    The mapping dictionary maps spotify track ids to plex track ids.
+    '''
+    try:
+        return plexlibrary.fetchItem(mapping_dict[spotify_track_id])
+    except KeyError:
+        return None
+
+def search_track(plexlibrary: MusicSection,
+                 spotify_track: dict[str,str|dict|list],
+                 matching_strength: str | list[str]
+                 ) -> Track | None:
     '''
     Search for a match with the given spotify track in the plex library.
     The settings determine how strict the matching is.
@@ -13,7 +59,10 @@ def search_track(plexlibrary: MusicSection, spotify_track: dict[str,str|dict|lis
     if isinstance(matching_strength, list):
         found_track = None
         for strength in matching_strength:
-            found_track = search_track(plexlibrary = plexlibrary, spotify_track = spotify_track, matching_strength = strength)
+            found_track = search_track(plexlibrary = plexlibrary,
+                                       spotify_track = spotify_track,
+                                       matching_strength = strength
+                                       )
         return found_track
     if matching_strength == 'exact':
         return _search_track_exact(plexlibrary, spotify_track)
@@ -30,16 +79,24 @@ def search_track(plexlibrary: MusicSection, spotify_track: dict[str,str|dict|lis
     elif matching_strength == 'albumartist':
         return _search_track_by_album_and_artist(plexlibrary, spotify_track)
     elif matching_strength == 'descending':
-            return search_track(plexlibrary = plexlibrary, spotify_track = spotify_track, matching_strength = ['exact', 'strict', 'albumartist', 'album' , 'artist', 'loose'])
+        return search_track(plexlibrary = plexlibrary,
+                            spotify_track = spotify_track,
+                            matching_strength = [
+                                'exact',
+                                'strict',
+                                'albumartist',
+                                'album',
+                                'artist',
+                                'loose',
+                                ]
+                            )
     else:
-        raise ValueError(f"Matching setting {matching_strength} is unknown, available values are:\n\t exact, strict, loose, album, albumartist, descending")
-    
+        raise ValueError(f"Matching setting {matching_strength} is unknown, available values are:\n\t exact, strict, loose, album, artist, albumartist, descending")
 
 def _clean_title(title: str) -> str:
     """Clean Spotify or Plex track/album titles for fuzzy matching."""
     if not isinstance(title, str):
-        return ""
-        
+        return ""   
     # Normalize Unicode (accents, dashes, etc.)
     title = unicodedata.normalize("NFKD", title)
 
@@ -99,7 +156,7 @@ def _search_track_exact(plexlibrary: MusicSection, spotify_track:  dict) -> Trac
     if found_tracks:
         return found_tracks[0]
     else:
-         return None
+        return None
 
 def _search_track_strict(plexlibrary: MusicSection, spotify_track: dict) -> Track | None:
     '''
