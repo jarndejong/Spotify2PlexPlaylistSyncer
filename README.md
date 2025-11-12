@@ -104,6 +104,17 @@ Alternatively, a list of these options can be provided, which will be used itera
 ##### `print_matching_status:`
 Either `true` or `false`. If `true`, print the matching status of every spotify track (i.e. whether a match was found).
 
+##### `mapping_file:`
+Optionally, you can provide a dictionary (as `.yaml`) that maps Spotify track IDs to Plex track IDs. 
+This hardcodes a matching for any Spotify track that is in the dictionary to a given Plex track. 
+Any song in the Spotify playlist that is not hardcoded will be searched for.
+
+Spotify track ID's can be retrieved from their URL. Additionally, the unmatched and matched tracks overview files (see below) will contain the track ID's.
+
+Plex ID's can be found e.g. by [inspecting the XML](https://support.plex.tv/articles/201998867-investigate-media-information-and-formats/).
+If `false` or nothing, all tracks will be linked through standard search attempts.
+
+
 ### Miscellaneous
 ##### `print_unmatched_to_file:`
 Either `true` or `false`. If `true`, the unmatched spotify tracks will be printed to file.
@@ -111,9 +122,14 @@ Either `true` or `false`. If `true`, the unmatched spotify tracks will be printe
 Relative filename of the unmatched tracks file. Can be either a `.txt` or `.csv` file.
 
 ##### `print_matched_to_file:`
-Either `true` or `false`. If `true`, thenmatched spotify tracks and plex tracks will be printed to file. For error checking etc.
+Either `true` or `false`. If `true`, the matched spotify tracks and plex tracks will be printed to file. For error checking etc.
 ##### `matched_tracks_filename:`
 Relative filename of the matched tracks file. Can be either a `.txt` or `.csv` file.
+
+##### `create_hardcoded_mapping:`
+Either `true` or `false`. If true, save a mapping dictionary to a yaml file for all the matched tracks.
+##### `mapping_file_savepath:`
+Filename of the mapping dictionary results/hardcoded_tracks_mapping.yaml
 
 # Online repository
 The publicly available repository on GitHub (i.e. available [here](https://github.com/jarndejong/Spotify2PlexPlaylistSyncer); most likely you are currently viewing this one) is an automated mirror from a private, self-hosted git repository.
