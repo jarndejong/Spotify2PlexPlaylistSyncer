@@ -5,6 +5,9 @@ credentials/spotify.yaml
 # Don't upload actual settings
 settings.yaml
 
+# Don't upload playlist-specific results
+results/*
+
 # ---> Python
 # Byte-compiled / optimized / DLL files
 __pycache__/
