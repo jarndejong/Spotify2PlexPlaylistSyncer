@@ -1,6 +1,24 @@
 import csv
 from plexapi.audio import Track
 
+def handle_savetodisk(unmatched: list[dict[str,str | list]],
+                      matched: list[dict[str, str | list[str]]],
+                      plex_tracks: list[Track],
+                      settings: dict[str, str | list[str]]):
+    '''
+    Handle the saving to disk of unmatched tracks, matched tracks, and mapping dictionary, based on the settings.
+    '''
+    if settings['print_unmatched_to_file']:
+        save_unmatched(unmatched = unmatched, settings = settings)
+
+    if settings['print_matched_to_file']:
+        save_matched(matched = matched,
+                    found = plex_tracks,
+                    settings = settings)
+
+
+    if settings['create_hardcoded_mapping']:
+        save_hardcoded_matching(matched, plex_tracks, settings)
 
 def save_unmatched(unmatched: list[dict[str,str | list]], settings: dict[str, str | list[str]]):
     '''
@@ -93,7 +111,7 @@ def save_hardcoded_matching(spotify_tracks: list[dict[str, str | list[str]]], pl
     '''
     Create a hardcoded matching file, that links specific spotify tracks to specific plex tracks by ID.
     '''
-    with open(settings['mapping_file'], 'w', newline="", encoding = "utf-8") as fh:
+    with open(settings['mapping_file_savepath'], 'w', newline="", encoding = "utf-8") as fh:
         for spotify_track, plex_track in zip(spotify_tracks, plex_tracks):
             comment = f" # {plex_track.artist().title} — {plex_track.title}\n"
             fh.write(f"{spotify_track['track']['id']}: {plex_track.ratingKey}{comment}")
