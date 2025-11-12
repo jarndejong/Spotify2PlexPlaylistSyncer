@@ -11,6 +11,9 @@ plex_library_name: "Music"
 # if set to false or nothing, the name of the spotify playlist will be used
 plex_playlist_name: 
 
+# Optionally perform a dry run, not actually creating a playlist
+dry_run: true
+
 ### Sync settings
 # Append songs to the playlist, or create it from scratch?
 # Possible options are append, append_new, or from_scratch
@@ -29,6 +32,11 @@ matching_pattern: [album, artist, loose]
 # Print the per-track status of matching?
 print_matching_status: true
 
+# Optionally you can provide a harcoded mapping for tracks that are hard to find or are getting incorrectly mapped.
+# File should be spotify_id: plex_id mapping that will be read as yaml
+# If set to false or nothing, this option will not be used
+mapping_file: "results/hardcoded_tracks_mapping.yaml"
+
 ### Miscellaneous
 # The tool can print the unmatched tracks to file
 print_unmatched_to_file: true
@@ -40,4 +48,4 @@ matched_tracks_filename: "results/matched_tracks.txt"
 
 # Create a hardcoded mapping for the matched tracks
 create_hardcoded_mapping: true
-mapping_file: "results/tracks_mapping.csv"
+mapping_file_savepath: "results/hardcoded_tracks_mapping.yaml"
