@@ -1,5 +1,43 @@
+### Playlist settings
 # Spotify ID of playlist to sync
-playlist_id: "2y385pGnXJIqN5miW8n1TN"
+# Can also be full URL to playlist (go to spotify -> playlist -> share -> copy link to playlist)
+# playlist_id: "SPOTIFY-PLAYLIST-ID"
+playlist_id: "SPOTIFY_PLAYLIST_URL"
 
 # Name of plex music library to create playlist in.
 plex_library_name: "Music"
+
+# Name of playlist in plex
+# if set to false or nothing, the name of the spotify playlist will be used
+plex_playlist_name: 
+
+### Sync settings
+# Append songs to the playlist, or create it from scratch?
+# Possible options are append, append_new, or from_scratch
+# append_new only appends new songs to the playlist
+sync_mode: from_scratch
+
+# Create a new playlist if it doesn't exist? (for sync_mode options 'append' and 'append new')
+create_new_plex_playlist: true
+
+### Matching settings
+# How strong/strict should the matching be?
+# Possible options are, in order of strictness: 'exact', 'strict', 'albumartist', 'album', 'artist', 'loose'.
+# There is also the special option 'descending', which is equivalent to the list 'exact', 'strict', 'albumartist', 'album' , 'artist', 'loose'
+matching_pattern: [album, artist, loose]
+
+# Print the per-track status of matching?
+print_matching_status: true
+
+### Miscellaneous
+# The tool can print the unmatched tracks to file
+print_unmatched_to_file: true
+unmatched_tracks_filename: "results/unmatched_tracks.csv"
+
+# The tool can also print the matched tracks to file, this helps for sanity/error checks
+print_matched_to_file: true
+matched_tracks_filename: "results/matched_tracks.txt"
+
+# Create a hardcoded mapping for the matched tracks
+create_hardcoded_mapping: true
+mapping_file: "results/tracks_mapping.csv"
