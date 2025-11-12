@@ -21,6 +21,7 @@ def link_track(plexlibrary: MusicSection,
     If that doesn't results in a track, a search is performed.
     '''
     plex_track = None
+
     if mapping_dict:
         plex_track = retrieve_track_from_mapping(
                             plexlibrary = plexlibrary,

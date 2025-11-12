@@ -80,8 +80,8 @@ If `false` or nothing, the name of the spotify playlist will be used.
 ### Sync settings
 ##### `sync_mode:`
 Type of sync. Options are:
-- `append`: Append all matched tracks from the spotify playlist to the plex playlist. (Not yet implemented)
-- `append_new`: Append only those matched tracks from the spotify playlist to the plex playlist that are not already in there. (Not yet implemented)
+- `append`: Append all matched tracks from the spotify playlist to the plex playlist.
+- `append_new`: Append only those matched tracks from the spotify playlist to the plex playlist that are not already in there.
 - `from_scratch`: Create a new plex playlist with the matched spotify tracks.
 
 ##### `create_new_plex_playlist:`
