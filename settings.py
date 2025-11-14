@@ -1,10 +1,10 @@
-import yaml
-
-def load_configuration(path: str) -> dict:
-    with open(path, "r", encoding = 'utf-8') as f:
-        return yaml.safe_load(f)
+"""
+This module loads settings.yaml as a dictionary.
+"""
+from credentials.credentials import load_configuration
 
 settings = load_configuration('./settings.yaml')
 settings['mapping_dict'] = None
+# Add the mapping dictionary to the settings if it exists.
 if settings['mapping_file']:
     settings['mapping_dict'] = load_configuration(settings['mapping_file'])
