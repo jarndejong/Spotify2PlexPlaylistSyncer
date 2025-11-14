@@ -77,6 +77,9 @@ Name of the Plex music library to search for tracks and create the playlist in.
 Name of the playlist that will be created or synced to in Plex.
 If `false` or nothing, the name of the spotify playlist will be used.
 
+##### `dry_run:`
+Either `true` or `false`. If `true`, skip creating the playlist. The matched & unmatched tracks are still written to fiel (see below).
+
 ### Sync settings
 ##### `sync_mode:`
 Type of sync. Options are:
