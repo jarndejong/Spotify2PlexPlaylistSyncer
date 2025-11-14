@@ -4,7 +4,7 @@ from plexapi.playlist import Playlist
 from plexapi.audio import Track
 from plexapi.exceptions import NotFound
 
-from src.matching import link_track
+from src.matching import match_track
 from src.spotify import tracks_from_spotify_playlist
 from src.plex import library, get_plex_playlist_name
 
@@ -85,7 +85,8 @@ def find_tracks(plexlibrary: MusicSection,
                 spotify_tracks: list[dict[str, str | list[str]]],
                 matching_pattern: str | list[str],
                 print_status: bool = False,
-                mapping_dict: dict[str,str] | None = None) -> tuple[list[dict], list[dict], list[Track]]:
+                mapping_dict: dict[str,str] | None = None,
+                skip_list: list[str] | None = None) -> tuple[list[dict], list[dict], list[Track]]:
     '''
     Try to match all the tracks in the spotify_tracks list with songs in the plexlibrary music library.
     '''
@@ -103,8 +104,9 @@ def find_tracks(plexlibrary: MusicSection,
         # Check typing
         assert isinstance(spotify_track, dict)
 
-        plex_track = link_track(plexlibrary=plexlibrary,
+        plex_track = match_track(plexlibrary=plexlibrary,
                                 spotify_track = spotify_track,
+                                skip_list = skip_list,
                                 mapping_dict = mapping_dict,
                                 matching_strength=matching_pattern)
 

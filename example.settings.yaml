@@ -32,10 +32,15 @@ matching_pattern: [album, artist, loose]
 # Print the per-track status of matching?
 print_matching_status: true
 
-# Optionally you can provide a harcoded mapping for tracks that are hard to find or are getting incorrectly mapped.
+# Optionally you can provide a hardcoded mapping for tracks that are hard to find or are getting incorrectly mapped.
 # File should be spotify_id: plex_id mapping that will be read as yaml
 # If set to false or nothing, this option will not be used
 mapping_file: "hardcoded_matches/hardcoded_tracks_mapping.yaml"
+
+# Optionally you can provide a list of spotify ID's to skip. 
+# This is especially useful if you are certain no match exists in your library, so that no wrong match is returned.
+# See example.hardcoded/matches/skips.yaml for an example.
+# skip_file:
 
 ### Miscellaneous
 # The tool can print the unmatched tracks to file

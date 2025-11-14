@@ -119,6 +119,10 @@ Spotify track ID's can be retrieved from their URL. Additionally, the unmatched 
 Plex ID's can be found e.g. by [inspecting the XML](https://support.plex.tv/articles/201998867-investigate-media-information-and-formats/).
 If `false` or nothing, all tracks will be linked through standard search attempts.
 
+##### `skip_file:`
+Optionally, you can provide a list (as `.yaml`, see example in `example.hardcoded_matches/skip.yaml`) of Spotify ID's to skip.
+This is especially useful if you are certain no match exists in your Plex library.
+
 ### Miscellaneous
 ##### `print_unmatched_to_file:`
 Either `true` or `false`. If `true`, the unmatched spotify tracks will be printed to file.

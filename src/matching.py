@@ -9,18 +9,24 @@ from rapidfuzz import fuzz
 
 from plexapi.library import MusicSection
 from plexapi.audio import Track, Album
+from plexapi.exceptions import NotFound
 
-def link_track(plexlibrary: MusicSection,
+def match_track(plexlibrary: MusicSection,
                 spotify_track: dict[str,str],
+                skip_list: list[str] | None,
                 mapping_dict: dict[str,str] | None,
                 matching_strength: str | list[str],
                 ) -> Track | None:
     '''
     Try to link a spotify track to a plex track. Returns None if no track is found.
-    First tries to retrieve the track from the mapping.
+    First checks if track is in the skip list.
+    Then tries to retrieve the track from the mapping.
     If that doesn't results in a track, a search is performed.
     '''
     plex_track = None
+    if skip_list:
+        if spotify_track['id'] in skip_list:
+            return None
 
     if mapping_dict:
         plex_track = retrieve_track_from_mapping(
@@ -45,7 +51,12 @@ def retrieve_track_from_mapping(plexlibrary: MusicSection,
     The mapping dictionary maps spotify track ids to plex track ids.
     '''
     try:
-        return plexlibrary.fetchItem(mapping_dict[spotify_track_id])
+        return plexlibrary.fetchItem(int(mapping_dict[spotify_track_id]))
+    except ValueError as exc:
+        raise ValueError(f"Can't parse the id {mapping_dict[spotify_track_id]} to an int.") from exc
+    except NotFound:
+        print(f"Can't find Plex track with ID {mapping_dict[spotify_track_id]}")
+        return None
     except KeyError:
         return None
 
