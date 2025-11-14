@@ -1,7 +1,13 @@
+"""
+This module loads .yaml configurations as dictionaries.
+"""
 import yaml
 
-def load_configuration(path="settings.yaml"):
-    with open(path, "r") as f:
+def load_configuration(path: str):
+    """
+    Load a .yaml configuration from file as a docstring.
+    """
+    with open(path, "r", encoding = "utf-8") as f:
         return yaml.safe_load(f)
 
 
