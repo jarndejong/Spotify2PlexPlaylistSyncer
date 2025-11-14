@@ -112,11 +112,12 @@ Optionally, you can provide a dictionary (as `.yaml`) that maps Spotify track ID
 This hardcodes a matching for any Spotify track that is in the dictionary to a given Plex track. 
 Any song in the Spotify playlist that is not hardcoded will be searched for.
 
+An example is given in `example.hardcoded_matches/example.yaml`.
+
 Spotify track ID's can be retrieved from their URL. Additionally, the unmatched and matched tracks overview files (see below) will contain the track ID's.
 
 Plex ID's can be found e.g. by [inspecting the XML](https://support.plex.tv/articles/201998867-investigate-media-information-and-formats/).
 If `false` or nothing, all tracks will be linked through standard search attempts.
-
 
 ### Miscellaneous
 ##### `print_unmatched_to_file:`
@@ -132,7 +133,7 @@ Relative filename of the matched tracks file. Can be either a `.txt` or `.csv` f
 ##### `create_hardcoded_mapping:`
 Either `true` or `false`. If true, save a mapping dictionary to a yaml file for all the matched tracks.
 ##### `mapping_file_savepath:`
-Filename of the mapping dictionary results/hardcoded_tracks_mapping.yaml
+Filepath where to save, e.g. `hardcoded_matches/dryrun.yaml`
 
 # Online repository
 The publicly available repository on GitHub (i.e. available [here](https://github.com/jarndejong/Spotify2PlexPlaylistSyncer); most likely you are currently viewing this one) is an automated mirror from a private, self-hosted git repository.
