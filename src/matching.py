@@ -16,7 +16,7 @@ def match_track(plexlibrary: MusicSection,
                 skip_list: list[str] | None,
                 mapping_dict: dict[str,str] | None,
                 matching_strength: str | list[str],
-                ) -> Track | None:
+                ) -> Track | None | str:
     '''
     Try to link a spotify track to a plex track. Returns None if no track is found.
     First checks if track is in the skip list.
@@ -26,7 +26,7 @@ def match_track(plexlibrary: MusicSection,
     plex_track = None
     if skip_list:
         if spotify_track['id'] in skip_list:
-            return None
+            return "Skipped"
 
     if mapping_dict:
         plex_track = retrieve_track_from_mapping(

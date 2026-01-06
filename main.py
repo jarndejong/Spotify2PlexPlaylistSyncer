@@ -4,8 +4,9 @@ from src.sync import sync
 from src.save import handle_savetodisk
 
 #%%
-matched, unmatched, plex_tracks = sync(settings)
+matched, unmatched, plex_tracks, skipped = sync(settings)
 
-print(f"Number of unmatched tracks: {len(unmatched)}")
+
+print(f"\t{len(matched)}, {len(unmatched)} and {len(skipped)} matched, unmatched and skipped tracks.")
 
 handle_savetodisk(unmatched, matched, plex_tracks, settings)

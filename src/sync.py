@@ -1,4 +1,6 @@
-
+"""
+This module contains the syncing functions.
+"""
 from plexapi.library import MusicSection
 from plexapi.playlist import Playlist
 from plexapi.audio import Track
@@ -17,30 +19,36 @@ def sync(settings: dict[str,str | list[str] | bool]):
     assert isinstance(settings['matching_pattern'], (str, list))
     assert isinstance(settings['print_matching_status'], bool)
     assert isinstance(settings['mapping_dict'], dict)
+    assert isinstance(settings['skip_list'], list)
 
     spotify_tracks = tracks_from_spotify_playlist(settings['playlist_id'])
 
-    matched, unmatched, plex_tracks = find_tracks(plexlibrary = library,
+    matched, unmatched, plex_tracks, skipped = find_tracks(plexlibrary = library,
                               spotify_tracks = spotify_tracks,
                               matching_pattern = settings['matching_pattern'],
                               print_status = settings['print_matching_status'],
-                              mapping_dict = settings['mapping_dict'])
+                              mapping_dict = settings['mapping_dict'],
+                              skip_list = settings['skip_list'])
 
     playlist_name = get_plex_playlist_name()
 
     if settings['dry_run']:
-        return matched, unmatched, plex_tracks
-    if settings['sync_mode'] == 'from_scratch':
+        print("Dry run - no playlist created.")
+    elif settings['sync_mode'] == 'from_scratch':
         create_playlist(plexlibrary = library,
                         plex_tracks = plex_tracks,
                         playlist_name = playlist_name)
-        return matched, unmatched, plex_tracks
-    if settings['sync_mode'] == 'append':
-        raise NotImplementedError("This sync mode has not yet been implemented.")
     elif settings['sync_mode'] == 'append':
-        raise NotImplementedError("This sync mode has not yet been implemented.")
+        append_playlist(plexlibrary = library,
+                        plex_tracks = plex_tracks,
+                        playlist_name = playlist_name)
+    elif settings['sync_mode'] == 'append':
+        append_playlist_newtracks_only(plexlibrary = library,
+                                       plex_tracks = plex_tracks,
+                                       playlist_name = playlist_name)
     else:
         raise ValueError(f"Sync mode {settings['sync_mode']} is not known, valid options are from_scratch, append, append_new. Please check settings.yaml.")
+    return matched, unmatched, plex_tracks, skipped
 
 def create_playlist(plexlibrary: MusicSection, plex_tracks: list[Track], playlist_name: str):
     '''
@@ -52,7 +60,9 @@ def create_playlist(plexlibrary: MusicSection, plex_tracks: list[Track], playlis
                                smart = False,
                                )
 
-def append_playlist(plexlibrary: MusicSection, plex_tracks: list, playlist_name: str):
+def append_playlist(plexlibrary: MusicSection,
+                    plex_tracks: list,
+                    playlist_name: str):
     '''
     Append the given tracks to the given playlist. Raises ValueError if no such playlists exists.
     '''
@@ -86,13 +96,14 @@ def find_tracks(plexlibrary: MusicSection,
                 matching_pattern: str | list[str],
                 print_status: bool = False,
                 mapping_dict: dict[str,str] | None = None,
-                skip_list: list[str] | None = None) -> tuple[list[dict], list[dict], list[Track]]:
+                skip_list: list[str] | None = None) -> tuple[list[dict], list[dict], list[Track], list[dict]]:
     '''
     Try to match all the tracks in the spotify_tracks list with songs in the plexlibrary music library.
     '''
     matched = []
     unmatched = []
     found = []
+    skipped = []
 
     nr_spotify_tracks = len(spotify_tracks)
     for nr, element in enumerate(spotify_tracks):
@@ -101,6 +112,7 @@ def find_tracks(plexlibrary: MusicSection,
         
         spotify_track = element['track'] # type: ignore
         spotify_track_name = spotify_track['name'] # type: ignore
+        spotify_track_artist = spotify_track['artists'][0]['name'] # type: ignore
         # Check typing
         assert isinstance(spotify_track, dict)
 
@@ -109,14 +121,16 @@ def find_tracks(plexlibrary: MusicSection,
                                 skip_list = skip_list,
                                 mapping_dict = mapping_dict,
                                 matching_strength=matching_pattern)
-
         if plex_track:
+            if plex_track == 'Skipped':
+                skipped.append(element)
+                continue
             if print_status:
                 print(f"\tMatched spotify track {spotify_track_name} as plex track {plex_track.title}")
             matched.append(element)
             found.append(plex_track)
         else:
             if print_status:
-                print(f"\tCould not find match for spotify track {spotify_track_name}")
+                print(f"\tCould not find match for spotify track {spotify_track_name} ({spotify_track_artist})")
             unmatched.append(element)
-    return matched, unmatched, found
+    return matched, unmatched, found, skipped
