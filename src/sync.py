@@ -69,7 +69,7 @@ def append_playlist(plexlibrary: MusicSection,
     try:
         playlist = plexlibrary.playlist(playlist_name)
     except NotFound as exc:
-        raise ValueError(f"Can't find playlist named {playlist_name}, available playlists:\n{'\t\'n'.join([playlist.title for playlist in plexlibrary.playlists()])}") from exc
+        raise ValueError(f"\tCan't find playlist named {playlist_name}, available playlists:\n{'\t\'n'.join([playlist.title for playlist in plexlibrary.playlists()])}") from exc
     assert isinstance(playlist, Playlist)
     playlist.addItems(plex_tracks)
 
@@ -124,9 +124,11 @@ def find_tracks(plexlibrary: MusicSection,
         if plex_track:
             if plex_track == 'Skipped':
                 skipped.append(element)
+                if print_status:
+                    print(f"\tSkipped spotify track {spotify_track_name} ({spotify_track_artist})")
                 continue
             if print_status:
-                print(f"\tMatched spotify track {spotify_track_name} as plex track {plex_track.title}")
+                print(f"\tMatched spotify track {spotify_track_name} ({spotify_track_artist}) as plex track {plex_track.title} ({plex_track.artist().title})") # type: ignore
             matched.append(element)
             found.append(plex_track)
         else:

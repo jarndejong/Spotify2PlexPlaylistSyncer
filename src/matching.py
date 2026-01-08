@@ -53,9 +53,9 @@ def retrieve_track_from_mapping(plexlibrary: MusicSection,
     try:
         return plexlibrary.fetchItem(int(mapping_dict[spotify_track_id]))
     except ValueError as exc:
-        raise ValueError(f"Can't parse the id {mapping_dict[spotify_track_id]} to an int.") from exc
+        raise ValueError(f"\tCan't parse the id {mapping_dict[spotify_track_id]} to an int.") from exc
     except NotFound:
-        print(f"Can't find Plex track with ID {mapping_dict[spotify_track_id]}")
+        print(f"\tCan't find Plex track with ID {mapping_dict[spotify_track_id]}")
         return None
     except KeyError:
         return None
