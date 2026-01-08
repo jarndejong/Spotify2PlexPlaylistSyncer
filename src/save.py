@@ -95,7 +95,7 @@ def _save_matched_to_csv(matched: list[dict[str, str | list[str]]], found: list[
     '''
     with open(filepath, 'w', newline="", encoding = "utf-8") as fh:
         writer = csv.writer(fh)
-        writer.writerow(["Spotify Artist", "Spotify Title", "Plex Artist", "Plex Title", "Spotify ID", "Plex ID"])
+        writer.writerow(["Spotify Artist", "Spotify Title", "Plex Artist", "Plex Title", "Spotify ID", "Plex ID", "Match_entry", "Skipped_entry"])
         writer.writerows([
                 (
                     spotify_element["track"]["artists"][0]["name"],
@@ -104,6 +104,9 @@ def _save_matched_to_csv(matched: list[dict[str, str | list[str]]], found: list[
                     plex_track.title,
                     spotify_element["track"]["id"],
                     plex_track.ratingKey,
+                    f"{spotify_element["track"]["id"]}: {plex_track.ratingKey} # {plex_track.artist().title} - {plex_track.title}",
+                    f"{spotify_element["track"]["id"]} # {spotify_element["track"]["artists"][0]["name"]} - {
+                    spotify_element["track"]["name"]}"
                 )
                 for spotify_element, plex_track in zip(matched, found)
                 ])
