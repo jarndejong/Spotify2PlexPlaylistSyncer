@@ -25,7 +25,8 @@ create_new_plex_playlist: true
 
 ### Matching settings
 # How strong/strict should the matching be?
-# Possible options are, in order of strictness: 'exact', 'strict', 'albumartist', 'album', 'artist', 'loose'.
+# Possible options are, in order of strictness: 'exact', 'strict', 'albumartist', 'album', 'artist', 'loose' or 'hubsearch'.
+# See README for more info.
 # There is also the special option 'descending', which is equivalent to the list 'exact', 'strict', 'albumartist', 'album' , 'artist', 'loose'
 matching_pattern: [album, artist, loose]
 

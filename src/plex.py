@@ -9,16 +9,16 @@ from credentials.credentials import plex as plcredentials
 from settings import settings
 
 try:
-    plex = PlexServer(plcredentials["baseurl"], plcredentials["token"])
+    server = PlexServer(plcredentials["baseurl"], plcredentials["token"])
 except NotFound as exc:
     raise ValueError(f"Could not find plex server at {plcredentials["baseurl"]}, please check the settings.") from exc
 except Unauthorized as exc:
     raise ValueError(f"Could not access plex server with token {plcredentials["token"]}, please check the settings.") from exc
 
 try:
-    library = plex.library.section(settings["plex_library_name"])
+    library = server.library.section(settings["plex_library_name"])
 except NotFound as exc:
-    available_libraries = [library.title for library in plex.library.sections() if library.TYPE == "artist"]
+    available_libraries = [library.title for library in server.library.sections() if library.TYPE == "artist"]
     raise NotFound(f"Could not find the library {settings["plex_library_name"]}. Available libraries:" + "\n\t".join(available_libraries)) from exc
 
 def get_plex_playlist_name() -> str:

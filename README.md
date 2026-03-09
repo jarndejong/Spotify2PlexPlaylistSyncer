@@ -100,6 +100,7 @@ What type of matching to use. Options are:
 - `artistfuzzy`: Same as `artist` but uses fuzzy logic to match the songs.
 - `album`: First searches the plex library for the album. Then loops through all found albums and uses fuzzy logic to match the artist. If an album match is found, loops through its tracks and uses fuzzy logic to match the tracks.
 - `albumartist`:  Like `album`, but the album search is performed with the artist name as metadata.
+- `hubsearch`: Use the special 'plex hub' search function, which is roughly the same as the search bar function in the Plex web ui.
 - `descending`: special settings that loops through the other settings in following order: `'exact', 'strict', 'albumartist', 'album' , 'artist', 'loose'`, until a match is found.
 
 Alternatively, a list of these options can be provided, which will be used iteratively until a match is found.

@@ -1,6 +1,7 @@
 """
 This module contains the syncing functions.
 """
+from plexapi.server import PlexServer
 from plexapi.library import MusicSection
 from plexapi.playlist import Playlist
 from plexapi.audio import Track
@@ -8,7 +9,7 @@ from plexapi.exceptions import NotFound
 
 from src.matching import match_track
 from src.spotify import tracks_from_spotify_playlist
-from src.plex import library, get_plex_playlist_name
+from src.plex import server, library, get_plex_playlist_name
 
 def sync(settings: dict[str,str | list[str] | bool]):
     '''
@@ -28,7 +29,9 @@ def sync(settings: dict[str,str | list[str] | bool]):
                               matching_pattern = settings['matching_pattern'],
                               print_status = settings['print_matching_status'],
                               mapping_dict = settings['mapping_dict'],
-                              skip_list = settings['skip_list'])
+                              skip_list = settings['skip_list'],
+                              plexserver = server,
+                              )
 
     playlist_name = get_plex_playlist_name()
 
@@ -42,7 +45,7 @@ def sync(settings: dict[str,str | list[str] | bool]):
         append_playlist(plexlibrary = library,
                         plex_tracks = plex_tracks,
                         playlist_name = playlist_name)
-    elif settings['sync_mode'] == 'append':
+    elif settings['sync_mode'] == 'append_new':
         append_playlist_newtracks_only(plexlibrary = library,
                                        plex_tracks = plex_tracks,
                                        playlist_name = playlist_name)
@@ -96,7 +99,9 @@ def find_tracks(plexlibrary: MusicSection,
                 matching_pattern: str | list[str],
                 print_status: bool = False,
                 mapping_dict: dict[str,str] | None = None,
-                skip_list: list[str] | None = None) -> tuple[list[dict], list[dict], list[Track], list[dict]]:
+                skip_list: list[str] | None = None,
+                plexserver: PlexServer | None = None,
+                ) -> tuple[list[dict], list[dict], list[Track], list[dict]]:
     '''
     Try to match all the tracks in the spotify_tracks list with songs in the plexlibrary music library.
     '''
@@ -116,11 +121,12 @@ def find_tracks(plexlibrary: MusicSection,
         # Check typing
         assert isinstance(spotify_track, dict)
 
-        plex_track = match_track(plexlibrary=plexlibrary,
+        plex_track = match_track(plexlibrary = plexlibrary,
                                 spotify_track = spotify_track,
                                 skip_list = skip_list,
                                 mapping_dict = mapping_dict,
-                                matching_strength=matching_pattern)
+                                matching_strength=matching_pattern,
+                                plexserver = plexserver)
         if plex_track:
             if plex_track == 'Skipped':
                 skipped.append(element)

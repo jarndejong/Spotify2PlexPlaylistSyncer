@@ -8,6 +8,7 @@ import unicodedata
 from rapidfuzz import fuzz
 
 from plexapi.library import MusicSection
+from plexapi.server import PlexServer
 from plexapi.audio import Track, Album
 from plexapi.exceptions import NotFound
 
@@ -16,6 +17,7 @@ def match_track(plexlibrary: MusicSection,
                 skip_list: list[str] | None,
                 mapping_dict: dict[str,str] | None,
                 matching_strength: str | list[str],
+                plexserver: PlexServer | None = None,
                 ) -> Track | None | str:
     '''
     Try to link a spotify track to a plex track. Returns None if no track is found.
@@ -38,7 +40,8 @@ def match_track(plexlibrary: MusicSection,
         plex_track = search_track(
             plexlibrary=plexlibrary,
             spotify_track = spotify_track, # type: ignore
-            matching_strength=matching_strength,
+            matching_strength = matching_strength,
+            plexserver = plexserver,
         )
     return plex_track 
 
@@ -62,18 +65,20 @@ def retrieve_track_from_mapping(plexlibrary: MusicSection,
 
 def search_track(plexlibrary: MusicSection,
                  spotify_track: dict[str,str|dict|list],
-                 matching_strength: str | list[str]
+                 matching_strength: str | list[str],
+                 plexserver: PlexServer | None = None,
                  ) -> Track | None:
     '''
     Search for a match with the given spotify track in the plex library.
-    The settings determine how strict the matching is.
+    The settings determine how strict the matching is, or what method is used.
     '''
     if isinstance(matching_strength, list):
         found_track = None
         for strength in matching_strength:
             found_track = search_track(plexlibrary = plexlibrary,
                                        spotify_track = spotify_track,
-                                       matching_strength = strength
+                                       matching_strength = strength,
+                                       plexserver = plexserver,
                                        )
         return found_track
     if matching_strength == 'exact':
@@ -90,6 +95,10 @@ def search_track(plexlibrary: MusicSection,
         return _search_track_by_album(plexlibrary, spotify_track)
     elif matching_strength == 'albumartist':
         return _search_track_by_album_and_artist(plexlibrary, spotify_track)
+    elif matching_strength == 'hubsearch':
+        if not plexserver:
+            raise ValueError("For hubsearch-based mapping, please provide a plexserver instance.")
+        return _search_track_by_hubsearch(plexserver, spotify_track)
     elif matching_strength == 'descending':
         return search_track(plexlibrary = plexlibrary,
                             spotify_track = spotify_track,
@@ -100,13 +109,14 @@ def search_track(plexlibrary: MusicSection,
                                 'album',
                                 'artist',
                                 'loose',
-                                ]
+                                ],
+                                plexserver = plexserver,
                             )
     else:
         raise ValueError(f"Matching setting {matching_strength} is unknown, available values are:\n\t exact, strict, loose, album, artist, albumartist, descending")
 
 def _clean_title(title: str) -> str:
-    """Clean Spotify or Plex track/album titles for fuzzy matching."""
+    """Clean Spotify or Plex track/album titles for matching."""
     if not isinstance(title, str):
         return ""   
     # Normalize Unicode (accents, dashes, etc.)
@@ -117,7 +127,7 @@ def _clean_title(title: str) -> str:
 
     # Remove common suffixes after a dash, like " - remastered 2008", " - edit", " - mono lp version"
     title = re.sub(
-        r"\s*-\s*(remaster(ed)?(\s*\d{4})?|mono|stereo|single|album|radio|"
+        r"\s*-\s*.*?(remaster(ed)?(\s*\d{4})?|mono|stereo|single|album|radio|"
         r"bonus|lp|version|mix|edit|take|alt|acoustic|live|reissue)\b.*",
         "",
         title,
@@ -137,7 +147,9 @@ def _clean_title(title: str) -> str:
     title = re.sub(r"\s*\(.*?version\)", "", title, flags=re.IGNORECASE)
 
     # Remove redundant punctuation and multiple spaces
-    title = re.sub(r"[\[\]\(\)]", "", title)
+    title = re.sub(r'[\[\]\(\)"]', "", title)
+    # Replace multiple dots with a space to avoid issues with URLs
+    title = re.sub(r'\.{2,}', ' ', title)
     title = re.sub(r"\s{2,}", " ", title)
 
     # Strip punctuation at ends
@@ -319,3 +331,23 @@ def _search_track_loose(plexlibrary: MusicSection, spotify_track: dict) -> Track
             plex_track = found_track
     
     return plex_track
+
+def _search_track_by_hubsearch(plexserver: PlexServer, spotify_track: dict) -> Track | None:
+    '''
+    Search the plex server for a given track using the hub search method.
+    If multiple tracks are found, returns the first result.
+    The hub search method is like the search bar in the web ui.
+    '''
+    track_name = _clean_title(spotify_track['name'])
+
+    artists = spotify_track['artists']
+    spotify_artist_name = _clean_title(artists[0]['name'])
+
+    spotify_album_name = _clean_title(spotify_track['album']['name'])
+    
+    found_tracks = plexserver.search(query = track_name + ' ' + spotify_artist_name + ' ' + spotify_album_name, mediatype = 'track')
+
+    if not found_tracks:
+        found_tracks = plexserver.search(query = track_name + ' '+ spotify_artist_name, mediatype = 'track')
+
+    return found_tracks[0] if found_tracks else None
